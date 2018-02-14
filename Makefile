@@ -34,7 +34,7 @@ ${OS_IMG}: ${BOOTLOADER_O} ${KERNEL_O}
 	@echo " done!"
 
 debug: ${OS_IMG}
-	qemu-system-i386 -machine q35 -drive format=raw,file=${OS_IMG},if=floppy -gdb tcp::26000 -S
+	qemu-system-i386 -machine q35 -m 256M -drive format=raw,file=${OS_IMG},if=floppy -gdb tcp::26000 -S
 
 run: ${OS_IMG}
-	qemu-system-i386 -machine q35 -drive format=raw,file=${OS_IMG},if=floppy
+	qemu-system-i386 -machine q35 -m 256M -drive format=raw,file=${OS_IMG},if=floppy
