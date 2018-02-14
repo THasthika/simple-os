@@ -7,7 +7,7 @@
 
 	jmp _start
 
-	%include "bootloader/print.asm"
+	%include "print.asm"
 
 _start:	
 	mov bp, 0x8000		; set base pointer to 0x7c00 + 0x8000 ?
