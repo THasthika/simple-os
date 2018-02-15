@@ -6,9 +6,9 @@
 	;; Maintainer: Tharindu Hasthika
 	;; Created: Thu Feb 15 07:37:43 2018 (+0530)
 	;; Version: 
-	;; Last-Updated: Thu Feb 15 13:19:26 2018 (+0530)
+	;; Last-Updated: Thu Feb 15 09:08:46 2018 (+0530)
 	;;           By: Tharindu Hasthika
-	;;     Update #: 82
+	;;     Update #: 68
 	;; URL: 
 	;; Keywords: 
 	;; Compatibility: 
@@ -48,31 +48,42 @@
 	[org 0x7c00]
 	[bits 16]
 
-	mov bp, 0x9000
-	mov sp, bp
-
-	mov bx, MSG_REAL_MODE
-	call print_string
-
-	jmp switch_to_pm
+	jmp _start
 
 	%include "print_string.asm"
-	%include "gdt.asm"
-	%include "print_string_pm.asm"
-	%include "switch_to_pm.asm"
-
-	[bits 32]
+	%include "print_hex.asm"
+	%include "disk_load.asm"
 	
-BEGIN_PM:
+_start:
+	mov [BOOT_DRIVE], dl
+	
+	;; set the stack segment and initialize a stack
+	;; mov bx, 0x8000
+	;; mov ss, bx
+	mov bp, 0x8000		; set base pointer to 0xffff [physical location 0x8000 * 16 + 0xf000 = 0x8f000]
+	mov sp, bp		; sp = bp
 
-	mov ebx, MSG_PROT_MODE
-	call print_string_pm
+	;; mov ah, 0x2
+	;; mov al, 5		; number of sectors to read
+	;; mov ch, 0		; cylinder number
+	;; mov cl, 2		; sector number (starts from 1)
+	;; mov dh, 0		; head count (starts from 0)
+	;; mov dl, 0		; drive number
+
+	mov bx, 0x00
+	mov es, bx
+	mov bx, 0x9000
+	
+	mov dl, [BOOT_DRIVE]
+	mov dh, 5
+	call disk_load
+
+	mov bx, 0x9000
+	call print_string
 
 	jmp $
 
-MSG_REAL_MODE:	db "Started in 16-bit Real Mode", 0
-	
-MSG_PROT_MODE:	db "In Protected Mode!", 0
+BOOT_DRIVE:	db 0
 	
 	times 510 - ($-$$) db 0
 

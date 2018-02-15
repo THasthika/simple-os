@@ -1,14 +1,14 @@
-	;;; bootloader.asm --- 
+	;;; switch_to_pm.asm --- 
 	;; 
-	;; Filename: bootloader.asm
+	;; Filename: switch_to_pm.asm
 	;; Description: 
 	;; Author: Tharindu Hasthika
-	;; Maintainer: Tharindu Hasthika
-	;; Created: Thu Feb 15 07:37:43 2018 (+0530)
+	;; Maintainer: 
+	;; Created: Thu Feb 15 13:00:23 2018 (+0530)
 	;; Version: 
-	;; Last-Updated: Thu Feb 15 13:19:26 2018 (+0530)
+	;; Last-Updated: Thu Feb 15 13:19:19 2018 (+0530)
 	;;           By: Tharindu Hasthika
-	;;     Update #: 82
+	;;     Update #: 8
 	;; URL: 
 	;; Keywords: 
 	;; Compatibility: 
@@ -45,38 +45,39 @@
 	;; 
 	;;; Code:
 
-	[org 0x7c00]
 	[bits 16]
 
-	mov bp, 0x9000
-	mov sp, bp
+switch_to_pm:	
 
-	mov bx, MSG_REAL_MODE
-	call print_string
+	cli			; clear interrupts
 
-	jmp switch_to_pm
+	lgdt [gdt_descriptor]	; load the previously defined gdt
 
-	%include "print_string.asm"
-	%include "gdt.asm"
-	%include "print_string_pm.asm"
-	%include "switch_to_pm.asm"
+	;; to switch to 32 bit from 16 bit the first bit of cr0
+	;; register must be set
+	mov eax, cr0		; load the cr0 register to eax
+	or eax, 0x1		; set eax first bit
+	mov cr0, eax		; put the new cr0 value
+
+	;; to clear the existing pipeline we must far jump
+	;; to a new address
+
+	jmp CODE_SEG:init_pm
 
 	[bits 32]
-	
-BEGIN_PM:
 
-	mov ebx, MSG_PROT_MODE
-	call print_string_pm
+init_pm:
+	mov ax, DATA_SEG
+	mov ds, ax
+	mov ss, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 
-	jmp $
+	mov ebp, 0x90000	; update the stack to the top of free space
+	mov esp, ebp
 
-MSG_REAL_MODE:	db "Started in 16-bit Real Mode", 0
-	
-MSG_PROT_MODE:	db "In Protected Mode!", 0
-	
-	times 510 - ($-$$) db 0
-
-	dw 0xAA55		; Boot Signature
+	jmp BEGIN_PM		; call a well known label
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;; bootloader.asm ends here
+	;;; switch_to_pm.asm ends here
