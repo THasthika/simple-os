@@ -1,21 +1,4 @@
-	;;; gdt.asm --- 
-	;; 
-	;; Filename: gdt.asm
-	;; Description: 
-	;; Author: Tharindu Hasthika
-	;; Maintainer: 
-	;; Created: Thu Feb 15 09:53:00 2018 (+0530)
-	;; Version: 
-	;; Last-Updated: Thu Feb 15 12:34:50 2018 (+0530)
-	;;           By: Tharindu Hasthika
-	;;     Update #: 23
-	;; URL: 
-	;; Keywords: 
-	;; Compatibility: 
-	;; 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 
-	;;; Commentary: 
+	;; gdt.asm 
 	;; 
 	;; This file defines a flat memory layout for the 32bit
 	;; protected mode that is needed in the Global Descriptor Table
@@ -33,31 +16,6 @@
 	;; The Global Driscriptor Table needs the first entry to be a null
 	;; entry.
 	;; 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 
-	;;; Change Log:
-	;; 
-	;; 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 
-	;; This program is free software; you can redistribute it and/or
-	;; modify it under the terms of the GNU General Public License as
-	;; published by the Free Software Foundation; either version 3, or
-	;; (at your option) any later version.
-	;; 
-	;; This program is distributed in the hope that it will be useful,
-	;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-	;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	;; General Public License for more details.
-	;; 
-	;; You should have received a copy of the GNU General Public License
-	;; along with this program; see the file COPYING.  If not, write to
-	;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-	;; Floor, Boston, MA 02110-1301, USA.
-	;; 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 
-	;;; Code:
 
 gdt_start:
 
@@ -96,7 +54,4 @@ gdt_descriptor:
 	dd gdt_start
 
 	CODE_SEG equ gdt_code - gdt_start
-	DATA_SEG equ gdt_data - gdt_start	
-	
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;; gdt.asm ends here
+	DATA_SEG equ gdt_data - gdt_start

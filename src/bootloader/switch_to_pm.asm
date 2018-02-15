@@ -1,50 +1,6 @@
-	;;; switch_to_pm.asm --- 
-	;; 
-	;; Filename: switch_to_pm.asm
-	;; Description: 
-	;; Author: Tharindu Hasthika
-	;; Maintainer: 
-	;; Created: Thu Feb 15 13:00:23 2018 (+0530)
-	;; Version: 
-	;; Last-Updated: Thu Feb 15 13:19:19 2018 (+0530)
-	;;           By: Tharindu Hasthika
-	;;     Update #: 8
-	;; URL: 
-	;; Keywords: 
-	;; Compatibility: 
-	;; 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 
-	;;; Commentary: 
-	;; 
-	;; 
-	;; 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 
-	;;; Change Log:
-	;; 
-	;; 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 
-	;; This program is free software; you can redistribute it and/or
-	;; modify it under the terms of the GNU General Public License as
-	;; published by the Free Software Foundation; either version 3, or
-	;; (at your option) any later version.
-	;; 
-	;; This program is distributed in the hope that it will be useful,
-	;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-	;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-	;; General Public License for more details.
-	;; 
-	;; You should have received a copy of the GNU General Public License
-	;; along with this program; see the file COPYING.  If not, write to
-	;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
-	;; Floor, Boston, MA 02110-1301, USA.
-	;; 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; 
-	;;; Code:
-
+	;; switch_to_pm.asm
+	;;
+	
 	[bits 16]
 
 switch_to_pm:	
@@ -78,6 +34,3 @@ init_pm:
 	mov esp, ebp
 
 	jmp BEGIN_PM		; call a well known label
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;; switch_to_pm.asm ends here
