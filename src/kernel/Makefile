@@ -1,7 +1,8 @@
 ASM_SRC := entry.asm
 
 KERNEL_C_SRC := kmain.c\
-		io.c
+		io.c\
+		util.c
 
 DRIVERS_C_SRC := \
 		drivers/screen.c

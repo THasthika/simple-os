@@ -1,7 +1,10 @@
 // main.c
 
-void kmain() {
-    char *video_memory = (char*) 0xb8000;
+#include "drivers/screen.h"
 
-    *video_memory = 'X';
+void kmain() {
+
+    clear_screen();
+
+    print("HELLO FROM OPERATING SYSTEM!\n");
 }
