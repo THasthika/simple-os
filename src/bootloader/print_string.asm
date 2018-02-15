@@ -4,6 +4,10 @@
 print_string:
 
 	pusha
+
+	mov dx, 0x0
+	mov ds, dx
+	
 	mov ah, 0x0e
 	
 _print_string_loop:

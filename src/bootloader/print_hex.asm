@@ -4,6 +4,9 @@
 print_hex:
 	pusha
 
+	mov bx, 0x0
+	mov ds, bx
+
 	mov bx, HEX_OUT+0x2
 	mov cx, 4
 
@@ -51,4 +54,4 @@ _print_hex_loop_end:
 	ret
 
 HEX_OUT:
-	db '0xffff', 0
+	db '0x0000', 0

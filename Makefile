@@ -9,6 +9,8 @@ KERNEL_DIR = ${SRC_DIR}/kernel
 BOOTLOADER_O=${BOOTLOADER_DIR}/bootloader.o
 KERNEL_O=${KERNEL_DIR}/kernel.o
 
+QEMU_RUN=qemu-system-i386 -machine q35 -drive format=raw,file=${OS_IMG},if=floppy
+
 export
 
 .PHONY: all clean ${BOOTLOADER_O} ${KERNEL_O}
@@ -34,7 +36,7 @@ ${OS_IMG}: ${BOOTLOADER_O} ${KERNEL_O}
 	@echo " done!"
 
 debug: ${OS_IMG}
-	qemu-system-i386 -machine q35 -m 256M -drive format=raw,file=${OS_IMG},if=floppy -gdb tcp::26000 -S
+	${QEMU_RUN} -gdb tcp::26000 -S
 
 run: ${OS_IMG}
-	qemu-system-i386 -machine q35 -m 256M -drive format=raw,file=${OS_IMG},if=floppy
+	${QEMU_RUN}
