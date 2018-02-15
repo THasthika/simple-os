@@ -1,5 +1,49 @@
-	;; A routine to print the hex value in a memory address
-	;; dx - the hex value to print
+	;;;	 print_hex.asm --- 
+	;; 
+	;; Filename: print_hex.asm
+	;; Description: 
+	;; Author: Tharindu Hasthika
+	;; Maintainer: Tharindu Hasthika 
+	;; Created: Thu Feb 15 07:43:27 2018 (+0530)
+	;; Version: 
+	;; Last-Updated: Thu Feb 15 08:15:55 2018 (+0530)
+	;;           By: Tharindu Hasthika
+	;;     Update #: 10
+	;; URL: 
+	;; Keywords: 
+	;; Compatibility: 
+	;; 
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; 
+	;;; Commentary: 
+	;; 
+	;; A Routine to print hex of the value in the dx register
+	;; 	
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; 
+	;;; Change Log:
+	;; 
+	;; 
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; 
+	;; This program is free software; you can redistribute it and/or
+	;; modify it under the terms of the GNU General Public License as
+	;; published by the Free Software Foundation; either version 3, or
+	;; (at your option) any later version.
+	;; 
+	;; This program is distributed in the hope that it will be useful,
+	;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+	;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	;; General Public License for more details.
+	;; 
+	;; You should have received a copy of the GNU General Public License
+	;; along with this program; see the file COPYING.  If not, write to
+	;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+	;; Floor, Boston, MA 02110-1301, USA.
+	;; 
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; 
+	;;; Code:
 
 print_hex:
 	pusha
@@ -55,3 +99,6 @@ _print_hex_loop_end:
 
 HEX_OUT:
 	db '0x0000', 0
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;;; print_hex.asm ends here

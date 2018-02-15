@@ -9,7 +9,7 @@ KERNEL_DIR = ${SRC_DIR}/kernel
 BOOTLOADER_O=${BOOTLOADER_DIR}/bootloader.o
 KERNEL_O=${KERNEL_DIR}/kernel.o
 
-QEMU_RUN=qemu-system-i386 -machine q35 -drive format=raw,file=${OS_IMG},if=floppy
+QEMU_RUN=qemu-system-i386 -machine q35 -drive format=raw,file=${OS_IMG},if=ide
 
 export
 

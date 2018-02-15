@@ -3,13 +3,13 @@
 # 
 # Filename: lba2chs.sh
 # Description: 
-# Author: Tharindu Hasthika Bathigama
-# Maintainer: 
+# Author: Tharindu Hasthika
+# Maintainer: Tharindu Hasthika
 # Created: Thu Feb 15 06:46:56 2018 (+0530)
 # Version: 
-# Last-Updated: Thu Feb 15 07:13:45 2018 (+0530)
-#           By: Tharindu Hasthika Bathigama
-#     Update #: 49
+# Last-Updated: Thu Feb 15 07:42:53 2018 (+0530)
+#           By: Tharindu Hasthika
+#     Update #: 50
 # URL: 
 # Keywords: 
 # Compatibility: 

@@ -1,14 +1,14 @@
-	;;; kernel.asm --- 
+	;;; print_string_pm.asm --- 
 	;; 
-	;; Filename: kernel.asm
+	;; Filename: print_string_pm.asm
 	;; Description: 
 	;; Author: Tharindu Hasthika
 	;; Maintainer: 
-	;; Created: Thu Feb 15 07:52:16 2018 (+0530)
+	;; Created: Thu Feb 15 09:20:21 2018 (+0530)
 	;; Version: 
-	;; Last-Updated: Thu Feb 15 08:16:10 2018 (+0530)
+	;; Last-Updated: Thu Feb 15 09:26:35 2018 (+0530)
 	;;           By: Tharindu Hasthika
-	;;     Update #: 3
+	;;     Update #: 13
 	;; URL: 
 	;; Keywords: 
 	;; Compatibility: 
@@ -17,7 +17,7 @@
 	;; 
 	;;; Commentary: 
 	;; 
-	;; 
+	;; EBX: location of null terminated string
 	;; 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 
@@ -45,9 +45,33 @@
 	;; 
 	;;; Code:
 
-	db 'Hello World OS', 0
-	mov ax, 0x1234
-	hlt
+
+	[bits 32]
+
+	VIDEO_MEMORY equ 0xb8000
+	WHITE_ON_BLACK equ 0x0f
+
+print_string_pm:
+	pusha
+
+	mov edx, VIDEO_MEMORY
+
+_print_string_pm_loop:
+	mov al, [ebx]
+	mov ah, WHITE_ON_BLACK
+
+	cmp al, 0
+	je _print_string_pm_done
+
+	mov [edx], ax
+	add ebx, 0x01
+	add edx, 0x02
+
+	jmp _print_string_pm_loop
+
+_print_string_pm_done:
+	popa
+	ret
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;; kernel.asm ends here
+	;;; print_string_pm.asm ends here

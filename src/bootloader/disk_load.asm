@@ -1,14 +1,14 @@
-	;;; kernel.asm --- 
+	;;; disk_load.asm --- 
 	;; 
-	;; Filename: kernel.asm
+	;; Filename: disk_load.asm
 	;; Description: 
 	;; Author: Tharindu Hasthika
-	;; Maintainer: 
-	;; Created: Thu Feb 15 07:52:16 2018 (+0530)
+	;; Maintainer: Tharindu Hasthika
+	;; Created: Thu Feb 15 07:56:54 2018 (+0530)
 	;; Version: 
-	;; Last-Updated: Thu Feb 15 08:16:10 2018 (+0530)
+	;; Last-Updated: Thu Feb 15 08:36:09 2018 (+0530)
 	;;           By: Tharindu Hasthika
-	;;     Update #: 3
+	;;     Update #: 21
 	;; URL: 
 	;; Keywords: 
 	;; Compatibility: 
@@ -17,7 +17,12 @@
 	;; 
 	;;; Commentary: 
 	;; 
-	;; 
+	;; Load 'n' sectors starting from the the 2nd sector from the
+	;; beginning of the disk
+	;; ARGUMENTS:
+	;; dh - number of sectors to read
+	;; dl - drive number to read from
+	;; [es:bx] - location in memory to load the data
 	;; 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; 
@@ -45,9 +50,40 @@
 	;; 
 	;;; Code:
 
-	db 'Hello World OS', 0
-	mov ax, 0x1234
-	hlt
+disk_load:
+
+	push ax
+	push cx
+	push dx
+
+	mov ah, 0x02		; set the bios interrupt index
+	mov al, dh		; no of sectors to read
+	mov ch, 0x00		; sector 0
+	mov dh, 0x00		; head 0
+	mov cl, 0x02		; start from the 2nd sector
+
+	int 0x13		; call the bios interrupt
+	jc _disk_error
+
+	pop dx
+
+	cmp dh, al
+	jne _disk_error
+	
+	pop cx
+	pop ax
+	ret
+
+_disk_error:
+
+	mov bx, 0x00
+	mov ds, bx
+	
+	mov bx, DISK_ERROR_MSG
+	call print_string
+	jmp $
+
+DISK_ERROR_MSG:	db "Disk read error!", 0
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;;; kernel.asm ends here
+	;;; disk_load.asm ends here
