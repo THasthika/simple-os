@@ -13,12 +13,30 @@
 	mov bx, REAL_MODE_MSG
 	call print_string
 
-	call load_kernel
+	call check_a20
 
-	jmp switch_to_pm
+	cmp ax, 1
+	je a20_active
+
+	mov bx, INACTIVE
+	call print_string
+
+	jmp end
+
+a20_active:
+	mov bx, ACTIVE
+	call print_string
+
+end:	
+	jmp $
+
+	;; call load_kernel
+
+	;; jmp switch_to_pm
 
 	%include "print_string.asm"
 	%include "disk_load.asm"
+	%include "check_a20.asm"
 	%include "gdt.asm"
 	%include "print_string_pm.asm"
 	%include "switch_to_pm.asm"
@@ -49,6 +67,9 @@ BEGIN_PM:
 	
 	jmp $
 
+ACTIVE:		db 'active', 0
+INACTIVE:	db 'inactive', 0
+	
 BOOT_DRIVE:	db 0
 LOAD_KERNEL_MSG:	db 'Loading the Kernel...', 0
 REAL_MODE_MSG:	db 'In Real Mode!', 0
