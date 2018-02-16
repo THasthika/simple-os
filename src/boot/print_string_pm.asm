@@ -1,6 +1,6 @@
 	;; print_string_pm.asm
 	;; 
-	;; EBX: location of null terminated string
+	;; ESI: location of null terminated string
 	;; 
 
 	[bits 32]
@@ -13,19 +13,20 @@ print_string_pm:
 
 	mov edx, VIDEO_MEMORY
 
-_print_string_pm_loop:
-	mov al, [ebx]
+	.print_string_pm_loop:
+
+	lodsb
+	or al, al
+	jz .print_string_pm_done
+
 	mov ah, WHITE_ON_BLACK
 
-	cmp al, 0
-	je _print_string_pm_done
-
 	mov [edx], ax
-	add ebx, 0x01
 	add edx, 0x02
 
-	jmp _print_string_pm_loop
+	jmp .print_string_pm_loop
 
-_print_string_pm_done:
+	.print_string_pm_done:
+
 	popa
 	ret

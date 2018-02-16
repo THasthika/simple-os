@@ -10,29 +10,12 @@
 	mov bp, 0x9000
 	mov sp, bp
 
-	mov bx, REAL_MODE_MSG
+	mov si, REAL_MODE_MSG
 	call print_string
-
-	call check_a20
-
-	cmp ax, 1
-	je a20_active
-
-	mov bx, INACTIVE
-	call print_string
-
-	jmp end
-
-a20_active:
-	mov bx, ACTIVE
-	call print_string
-
-end:	
-	jmp $
 
 	;; call load_kernel
 
-	;; jmp switch_to_pm
+	jmp switch_to_pm
 
 	%include "print_string.asm"
 	%include "disk_load.asm"
@@ -60,15 +43,13 @@ load_kernel:
 	[bits 32]
 	
 BEGIN_PM:
-	mov ebx, PROT_MODE_MSG
+	mov esi, PROT_MODE_MSG
 	call print_string_pm
 
-	call KERNEL_OFFSET
+	;; call KERNEL_OFFSET
 	
 	jmp $
 
-ACTIVE:		db 'active', 0
-INACTIVE:	db 'inactive', 0
 	
 BOOT_DRIVE:	db 0
 LOAD_KERNEL_MSG:	db 'Loading the Kernel...', 0

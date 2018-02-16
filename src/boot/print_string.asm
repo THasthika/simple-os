@@ -1,24 +1,22 @@
 	;; print_string.asm
 	;; 
-	;; A Routine to print a null terminated string addressed in bx
+	;; A Routine to print a null terminated string addressed in ds:si
 	;; register
 
 print_string:
 
 	pusha			; put all the registers to the stack
 	
+	.print_string_loop:
+
+	lodsb
+	or al, al
+	jz .print_string_end
 	mov ah, 0x0e
-	
-_print_string_loop:
-
-	cmp byte [bx], 0
-	je _print_string_end
-	mov al, [bx]
 	int 0x10
-	add bx, 1
-	jmp _print_string_loop
+	jmp .print_string_loop
 	
-_print_string_end:
-
-	popa			; restore all the registers
+	.print_string_end:
+	
+	popa
 	ret
