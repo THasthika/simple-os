@@ -1,16 +1,16 @@
-SRC := bootloader.asm
+SRC := entry.asm
 
 OBJ := $(patsubst %.asm, %.o, $(SRC))
 
 .PHONY: all clean
 
-all: bootloader.bin
+all: ${BOOT_BIN}
 
 clean:
-	rm -f ${OBJ} bootloader.bin
+	rm -f ${OBJ} ${BOOT_BIN}
 
 %.o: %.asm
 	nasm -f bin $< -o $@
 
-bootloader.bin: ${OBJ}
+${BOOT_BIN}: ${OBJ}
 	cat $^ > $@

@@ -16,12 +16,12 @@ EXEC_ADDR := 0x1000
 
 .PHONY: all clean
 
-all: kernel.bin
+all: ${KERNEL_BIN}
 
 clean:
-	rm -f ${ASM_OBJ} ${C_OBJ} kernel.bin
+	rm -f ${ASM_OBJ} ${C_OBJ} ${KERNEL_BIN}
 
-kernel.bin: ${ASM_OBJ} ${C_OBJ}
+${KERNEL_BIN}: ${ASM_OBJ} ${C_OBJ}
 	ld -m elf_i386 -o $@ -Ttext ${EXEC_ADDR} $^ --oformat binary
 
 %.asmo: %.asm

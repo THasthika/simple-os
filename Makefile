@@ -3,35 +3,41 @@ SRC_DIR = ${ROOT_DIR}/src
 BUILD_DIR = ${ROOT_DIR}/build
 OS_IMG = ${BUILD_DIR}/os.img
 
-BOOTLOADER_DIR = ${SRC_DIR}/boot
+BOOT_DIR = ${SRC_DIR}/boot
 KERNEL_DIR = ${SRC_DIR}/kernel
 
-BOOTLOADER_BIN=${BOOTLOADER_DIR}/bootloader.bin
-KERNEL_BIN=${KERNEL_DIR}/kernel.bin
+BOOT_BIN=${BUILD_DIR}/boot.bin
+KERNEL_BIN=${BUILD_DIR}/kernel.bin
 
 QEMU_RUN=qemu-system-i386 -machine q35 -drive format=raw,file=${OS_IMG},if=floppy
 
 export
 
-.PHONY: all clean ${BOOTLOADER_BIN} ${KERNEL_BIN}
+.PHONY: all clean ${BOOT_BIN} ${KERNEL_BIN}
 
-all: ${OS_IMG}
+all: boot kernel
+
+kernel: ${KERNEL_BIN}
+
+boot: ${BOOT_BIN}
+
+os: ${OS_IMG}
 
 clean:
 	rm -f ${OS_IMG}
-	@make -C ${BOOTLOADER_DIR} clean
+	@make -C ${BOOT_DIR} clean
 	@make -C ${KERNEL_DIR} clean
 
-${BOOTLOADER_BIN}:
-	@make -C ${BOOTLOADER_DIR}
+${BOOT_BIN}:
+	@make -C ${BOOT_DIR}
 
 ${KERNEL_BIN}:
 	@make -C ${KERNEL_DIR}
 
-${OS_IMG}: ${BOOTLOADER_BIN} ${KERNEL_BIN}
+${OS_IMG}: ${BOOT_BIN} ${KERNEL_BIN}
 	@echo -n "creating disk image..."
 	@dd if=/dev/zero of=${OS_IMG} bs=512 count=2880 2> /dev/null
-	@dd conv=notrunc if=${BOOTLOADER_BIN} of=${OS_IMG} bs=512 count=1 seek=0 2> /dev/null
+	@dd conv=notrunc if=${BOOT_BIN} of=${OS_IMG} bs=512 count=1 seek=0 2> /dev/null
 	@dd conv=notrunc if=${KERNEL_BIN} of=${OS_IMG} bs=512 count=1 seek=1 2> /dev/null
 	@echo " done!"
 
