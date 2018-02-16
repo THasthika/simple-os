@@ -38,7 +38,8 @@ ${OS_IMG}: ${BOOT_BIN} ${KERNEL_BIN}
 	@echo -n "creating disk image..."
 	@dd if=/dev/zero of=${OS_IMG} bs=512 count=2880 2> /dev/null
 	@dd conv=notrunc if=${BOOT_BIN} of=${OS_IMG} bs=512 count=1 seek=0 2> /dev/null
-	@dd conv=notrunc if=${KERNEL_BIN} of=${OS_IMG} bs=512 count=1 seek=1 2> /dev/null
+	@dd conv=notrunc if=${KERNEL_BIN} of=${OS_IMG} bs=512 seek=1 2> /dev/null
+#@cat ${BOOT_BIN} ${KERNEL_BIN} > ${OS_IMG}
 	@echo " done!"
 
 debug: ${OS_IMG}

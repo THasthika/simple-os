@@ -2,15 +2,17 @@
 	;; 
 	;; Load 'n' sectors starting from the the 2nd sector from the
 	;; beginning of the disk
-	;; ARGUMENTS:
-	;; dh - number of sectors to read
-	;; dl - drive number to read from
-	;; [es:bx] - location in memory to load the data
+	;; input:
+	;; 	dh - number of sectors to read
+	;; 	dl - drive number to read from
+	;; 	[es:bx] - location in memory to load the data
+	;;
+	;; output:
+	;; 	ax - loading status (1 - success, 0 - failure)
 	;; 
 
 disk_load:
 
-	push ax
 	push cx
 	push dx
 
@@ -21,24 +23,23 @@ disk_load:
 	mov cl, 0x02		; start from the 2nd sector
 
 	int 0x13		; call the bios interrupt
-	jc _disk_error
+	jc .error01
 
 	pop dx
 
 	cmp dh, al
-	jne _disk_error
+	jne .error02
 	
 	pop cx
-	pop ax
+
+	mov ax, 1
+	
 	ret
 
-_disk_error:
+	.error01:
+	pop dx
 
-	mov bx, 0x00
-	mov ds, bx
-	
-	mov bx, DISK_ERROR_MSG
-	call print_string
-	jmp $
-
-DISK_ERROR_MSG:	db "Disk read error!", 0
+	.error02:
+	pop cx
+	mov ax, 0
+	ret

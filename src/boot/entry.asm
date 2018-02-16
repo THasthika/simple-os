@@ -13,7 +13,7 @@
 	mov si, REAL_MODE_MSG
 	call print_string
 
-	;; call load_kernel
+	call load_kernel
 
 	jmp switch_to_pm
 
@@ -38,6 +38,18 @@ load_kernel:
 	mov dl, [BOOT_DRIVE]
 	call disk_load
 
+	or ax, ax
+	jz .error
+
+	jmp .done
+
+	.error:
+	mov si, DISK_LOAD_ERROR
+	call print_string
+
+	jmp $
+
+	.done:
 	ret
 
 	[bits 32]
@@ -46,17 +58,15 @@ BEGIN_PM:
 	mov esi, PROT_MODE_MSG
 	call print_string_pm
 
-	;; call KERNEL_OFFSET
+	jmp KERNEL_OFFSET
 	
 	jmp $
-
-ACTIVE:		db 'active', 0
-INACTIVE:	db 'inactive', 0
 	
 BOOT_DRIVE:	db 0
 LOAD_KERNEL_MSG:	db 'Loading the Kernel...', 0
 REAL_MODE_MSG:	db 'In Real Mode!', 0
 PROT_MODE_MSG:	db 'In Prot Mode!', 0
+DISK_LOAD_ERROR:	db 'Disk Load Error!', 0
 	
 	times 510 - ($-$$) db 0
 

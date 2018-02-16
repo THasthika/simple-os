@@ -71,23 +71,23 @@ void print_char(char character, int col, int row, char attribute_byte)
     int offset;
     if(col >= 0 && row >= 0)
     {
-	offset = get_screen_offset(col, row);
+    	offset = get_screen_offset(col, row);
     }
     else
     {
-	offset = get_cursor();
+    	offset = get_cursor();
     }
 
     // if character is a newline, set offset to the end of current row
     if(character == '\n')
     {
-	int rows = offset / (2 * MAX_COLS);
-	offset = get_screen_offset(MAX_COLS - 1, rows);
+    	int rows = offset / (2 * MAX_COLS);
+    	offset = get_screen_offset(MAX_COLS - 1, rows);
     }
     else
     {
-	vidmem[offset] = character;
-	vidmem[offset+1] = attribute_byte;
+    	vidmem[offset] = character;
+    	vidmem[offset+1] = attribute_byte;
     }
 
     // update the offset

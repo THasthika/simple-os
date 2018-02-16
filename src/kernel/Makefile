@@ -1,4 +1,4 @@
-ASM_SRC := entry.asm
+ASM_SRC := kentry.asm
 
 KERNEL_C_SRC := kmain.c\
 		io.c\
