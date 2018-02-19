@@ -1,16 +1,10 @@
-ASM_SRC := start.asm
+ASM_SRC := $(wildcard *.s **/*.s)
+C_SRC := $(wildcard *.c **/*.c)
 
-KERNEL_C_SRC := kmain.c\
-		common.c
-
-DRIVERS_C_SRC := drivers/screen.c
-
-C_SRC := ${KERNEL_C_SRC} ${DRIVERS_C_SRC}
-
-ASM_OBJ := $(patsubst %.asm, %.asm.o, $(ASM_SRC))
+ASM_OBJ := $(patsubst %.s, %.s.o, $(ASM_SRC))
 C_OBJ := $(patsubst %.c, %.c.o, $(C_SRC))
 
-CCFLAGS := -m32 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector
+CCFLAGS := -m32 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -I./
 LDFLAGS := -Tmain.ld -m elf_i386
 ASFLAGS := -f elf32
 
@@ -28,9 +22,9 @@ clean:
 ${BIN}: ${ASM_OBJ} ${C_OBJ}
 	$(LD) ${LDFLAGS} -o $@ $^
 
-%.asm:
+%.s:
 
-%.asm.o: %.asm
+%.s.o: %.s
 	$(AS) ${ASFLAGS} -o $@ $<
 
 %.c.o: %.c

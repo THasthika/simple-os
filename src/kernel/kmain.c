@@ -6,5 +6,6 @@
 
 void kmain()
 {
+    screen_clear();
     return;
 }

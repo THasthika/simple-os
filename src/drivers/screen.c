@@ -1,30 +1,77 @@
-#include "../common.h"
+#include "kernel/common.h"
 
 #include "screen.h"
 
-#define VIDEO_ADDRESS 0xb8000
-#define MAX_ROWS 25
-#define MAX_COLS 80
-
-// Attribute byte for our default color scheme
-#define WHITE_ON_BLACK 0x0f
+#define SCREEN_VIDEO_ADDRESS 0xb8000
+#define SCREEN_MAX_ROWS 25
+#define SCREEN_MAX_COLS 80
 
 // Screen Device I/O ports
-#define REG_SCREEN_CTRL 0x3d4
-#define REG_SCREEN_DATA 0x3d5
+#define SCREEN_REG_CTRL 0x3d4
+#define SCREEN_REG_DATA 0x3d5
+
+
 
 /* uint16_t get_cursor(); */
 void set_cursor(uint8_t x, uint8_t y);
 
-void put_char_at(char c, uint8_t x, uint8_t y)
+uint16_t get_attribute(uint8_t foreground, uint8_t background);
+
+void screen_clear()
 {
-    
+    uint16_t *vid_addr = (uint32_t*)SCREEN_VIDEO_ADDRESS;
+
+    uint16_t attributeByte = get_attribute(SCREEN_COLOR_WHITE, SCREEN_COLOR_BLACK);
+    uint16_t attribute = (attributeByte << 8);
+
+    uint16_t vdata = ' ' | attribute;
+
+    int i, j;
+
+    for(i = 0; i < SCREEN_MAX_ROWS; i++)
+    {
+	for(j = 0; j < SCREEN_MAX_COLS; i++)
+	{
+	    *vid_addr = vdata;
+	    vid_addr += 1;
+	}
+    }
+
+    set_cursor(0, 0);
+
+    return;
 }
 
 void screen_put(char c)
 {
     
 }
+
+void screen_print(char *c)
+{
+    
+}
+
+uint16_t get_attribute(uint8_t foreground, uint8_t background)
+{
+    uint16_t attr = (background << 4) | (foreground & 0xf);
+    return attr;
+}
+
+void put_char_at(char c, uint8_t x, uint8_t y)
+{
+    
+}
+
+void set_cursor(uint8_t x, uint8_t y)
+{
+    uint16_t loc = y * SCREEN_MAX_COLS + x;
+    outb(SCREEN_REG_CTRL, 14); 	/* tell the VGA controller that we are going to set the cursor high byte */
+    outb(SCREEN_REG_DATA, loc >> 8);
+    outb(SCREEN_REG_CTRL, 15);	/* tell the VGA controller that we are going to set the cursor low byte */
+    outb(SCREEN_REG_DATA, loc);
+}
+
 
 /* int get_screen_offset(int col, int row); */
 /* int handle_scrolling(int cursor_offset); */
@@ -143,12 +190,3 @@ void screen_put(char c)
     
 /*     return offset*2; */
 /* } */
-
-void set_cursor(uint8_t x, uint8_t y)
-{
-    uint16_t loc = y * MAX_COLS + x;
-    outb(REG_SCREEN_CTRL, 14); 	/* tell the VGA controller that we are going to set the cursor high byte */
-    outb(REG_SCREEN_DATA, loc >> 8);
-    outb(REG_SCREEN_CTRL, 15);	/* tell the VGA controller that we are going to set the cursor low byte */
-    outb(REG_SCREEN_DATA, loc);
-}
