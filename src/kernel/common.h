@@ -22,6 +22,8 @@ void outl(uint16_t port, uint32_t value);
 uint32_t inl(uint16_t port);
 
 // util function headers
-void memcpy(char *src, char *dest, size_t n);
+void* memcpy(void *dest, void *src, size_t n);
+
+uint32_t atoi(char *str);
 
 #endif // _COMMON_H

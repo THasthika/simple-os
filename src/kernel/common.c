@@ -44,11 +44,26 @@ uint32_t inl(uint16_t port)
     return ret;
 }
 
-void memcpy(char *src, char *dest, size_t n)
+void* memcpy(void *dest, void *src, size_t n)
 {
     int i;
+    char *csrc = (char *)src;
+    char *cdest = (char *)dest;
     for(i = 0; i < n; i++)
     {
-	*(dest+i) = *(src+i);
+	*(cdest+i) = *(csrc+i);
     }
+    return dest;
+}
+
+uint32_t atoi(char *str)
+{
+    uint32_t ret = 0;
+
+    while(*str >= '0' && *str <= '9')
+    {
+	ret = (uint32_t)((ret * 10) + (str - '0'));
+    }
+
+    return ret;
 }

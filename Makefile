@@ -5,6 +5,7 @@ MOUNT_DIR = ${BUILD_DIR}/disk
 
 GRUB_CFG = $(BUILD_DIR)/grub.cfg
 OS_IMG = ${BUILD_DIR}/os.img
+MAP_FILE = ${BUILD_DIR}/kernel.map
 
 BIN=${BUILD_DIR}/kernel.bin
 
@@ -19,6 +20,7 @@ all: ${BIN}
 kernel: ${SRC_DIR}
 
 clean:
+	rm -f ${MAP_FILE} ${BIN}
 	@make -C ${SRC_DIR} clean
 
 ${BIN}:

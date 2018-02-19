@@ -2,191 +2,188 @@
 
 #include "screen.h"
 
-#define SCREEN_VIDEO_ADDRESS 0xb8000
-#define SCREEN_MAX_ROWS 25
-#define SCREEN_MAX_COLS 80
+#define MAX_ROWS 25
+#define MAX_COLS 80
+
+#define DEFAULT_FOREGROUND SCREEN_COLOR_WHITE
+#define DEFAULT_BACKGROUND SCREEN_COLOR_BLACK
 
 // Screen Device I/O ports
-#define SCREEN_REG_CTRL 0x3d4
-#define SCREEN_REG_DATA 0x3d5
-
-
+#define REG_CTRL 0x3D4
+#define REG_DATA 0x3D5
 
 /* uint16_t get_cursor(); */
-void set_cursor(uint8_t x, uint8_t y);
+
+void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+void disable_cursor();
+void set_cursor();
+void handle_scrolling();
 
 uint16_t get_attribute(uint8_t foreground, uint8_t background);
 
+const uint16_t* VIDEO_ADDRESS = (uint16_t*) 0xB8000;
+
+static uint8_t g_cursor_x = 0, g_cursor_y = 0;
+static uint16_t g_attribute = ((DEFAULT_BACKGROUND << 4) | (DEFAULT_FOREGROUND & 0xF)) << 8;
+
 void screen_clear()
 {
-    uint16_t *vid_addr = (uint32_t*)SCREEN_VIDEO_ADDRESS;
+    
+    uint16_t *vid_addr = (uint16_t*) VIDEO_ADDRESS;
 
-    uint16_t attributeByte = get_attribute(SCREEN_COLOR_WHITE, SCREEN_COLOR_BLACK);
-    uint16_t attribute = (attributeByte << 8);
-
-    uint16_t vdata = ' ' | attribute;
+    uint16_t vdata = 0x20 | g_attribute;
 
     int i, j;
 
-    for(i = 0; i < SCREEN_MAX_ROWS; i++)
+    for(i = 0; i < MAX_ROWS; i++)
     {
-	for(j = 0; j < SCREEN_MAX_COLS; i++)
-	{
-	    *vid_addr = vdata;
-	    vid_addr += 1;
-	}
+	for(j = 0; j < MAX_COLS; j++)
+    	{
+    	    *vid_addr = vdata;
+    	    vid_addr += 1;
+    	}
     }
 
-    set_cursor(0, 0);
+    g_cursor_x = g_cursor_y = 0;
+    set_cursor();
 
     return;
 }
 
 void screen_put(char c)
 {
-    
+    uint16_t *vid_addr;
+
+    if(c == 0x08 && g_cursor_x)
+    {
+	g_cursor_x--;
+    }
+    else if(c == 0x09)
+    {
+	// handle tab s.t. when pressed increment x axis by 8
+	// but only to a position divisible by 8
+	g_cursor_x = (g_cursor_x + 8) & ~(8-1);
+    }
+    else if(c == '\r')
+    {
+	g_cursor_x = 0;
+    }
+    else if(c == '\n')
+    {
+	g_cursor_x = 0;
+	g_cursor_y++;
+    }
+    else
+    {
+	vid_addr = (uint16_t*) (VIDEO_ADDRESS + (g_cursor_y * MAX_COLS + g_cursor_x));
+	*vid_addr = c | g_attribute;
+	g_cursor_x++;
+    }
+
+    if(g_cursor_x > MAX_COLS)
+    {
+    	g_cursor_x = 0;
+    	g_cursor_y++;
+    }
+
+    handle_scrolling();
+
+    set_cursor();
 }
 
 void screen_print(char *c)
 {
+    while(*c != 0)
+	screen_put(*c++);
+}
+
+void screen_print_hex(uint32_t n)
+{
+    char *out = "0x00000000\n";
+    char x;
+    for(int i = 9; i > 1 && n > 0; i--)
+    {
+	x = n & 0xf;
+	if(x > 9)
+	    out[i] = (x - 10) + 'A';
+	else
+	    out[i] += x;
+	n = (n >> 4);
+    }
+    screen_print(out);
+}
+
+void screen_print_dec(uint32_t n)
+{
     
 }
 
-uint16_t get_attribute(uint8_t foreground, uint8_t background)
+void screen_enable_cursor()
 {
-    uint16_t attr = (background << 4) | (foreground & 0xf);
-    return attr;
+    enable_cursor(14, 15);
 }
 
-void put_char_at(char c, uint8_t x, uint8_t y)
+void screen_disable_cursor()
 {
-    
+    disable_cursor();
 }
 
-void set_cursor(uint8_t x, uint8_t y)
+void handle_scrolling()
 {
-    uint16_t loc = y * SCREEN_MAX_COLS + x;
-    outb(SCREEN_REG_CTRL, 14); 	/* tell the VGA controller that we are going to set the cursor high byte */
-    outb(SCREEN_REG_DATA, loc >> 8);
-    outb(SCREEN_REG_CTRL, 15);	/* tell the VGA controller that we are going to set the cursor low byte */
-    outb(SCREEN_REG_DATA, loc);
+    if(g_cursor_y < MAX_ROWS) return;
+
+    uint16_t *vid_addr = (uint16_t *)VIDEO_ADDRESS;
+    uint8_t y = 0;
+    for(; y < MAX_ROWS-1; y++)
+    {
+	memcpy(vid_addr+(y*MAX_COLS), vid_addr+((y+1)*MAX_COLS), MAX_COLS*2);
+    }
+
+    uint16_t blank = 0x20 | g_attribute;
+
+    vid_addr = (uint16_t *)(VIDEO_ADDRESS + (g_cursor_y - 1) * MAX_COLS);
+
+    for(y=0; y < MAX_COLS; y++)
+    {
+	*(vid_addr+y) = blank;
+    }
+
+    g_cursor_y--;
+
+    return;
 }
 
+void screen_set_foreground(uint8_t color)
+{
+    uint16_t attr = ((g_attribute >> 8) & 0xF0) | (color & 0x0F);
+    g_attribute = attr << 8;
+}
 
-/* int get_screen_offset(int col, int row); */
-/* int handle_scrolling(int cursor_offset); */
-/* void print_char(char character, int col, int row, char attribute_byte); */
+void screen_set_background(uint8_t color)
+{
+    uint16_t attr = ((g_attribute >> 8) & 0x0F) | (color & 0xF0);
+    g_attribute = attr << 8;
+}
 
-/* void screen_print(char *c) */
-/* { */
-/*     int i = 0; */
-/*     while(c[i] != 0) */
-/*     { */
-/* 	print_char(message[i++], -1, -1, WHITE_ON_BLACK); */
-/*     } */
-/* } */
+void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
+{
+    outb(REG_CTRL, 0x0A);
+    outb(REG_DATA, (inb(REG_DATA) & 0xC0) | cursor_start);
+    outb(REG_CTRL, 0x0B);
+    outb(REG_DATA, (inb(0x3E0) & 0xE0) | cursor_end);
+}
 
-/* void screen_clear() */
-/* { */
-/*     int row = 0; */
-/*     int col = 0; */
+void disable_cursor()
+{
+    outb(REG_CTRL, 0x0A);
+    outb(REG_DATA, 0x20);
+}
 
-/*     for(; row < MAX_ROWS; row++) */
-/*     { */
-/* 	for(col = 0; col < MAX_COLS; col++) */
-/* 	{ */
-/* 	    print_char(' ', col, row, WHITE_ON_BLACK); */
-/* 	} */
-/*     } */
-
-/*     set_cursor(get_screen_offset(0, 0)); */
-/* } */
-
-/* /\* Print a character to screen at col, row, or at cursor position *\/ */
-/* void print_char(char c, int col, int row, char attribute_byte) */
-/* { */
-/*     unsigned char *vidmem = (unsigned char *) VIDEO_ADDRESS; */
-
-/*     // assume default style if style is not set */
-/*     if(!attribute_byte) */
-/*     { */
-/* 	attribute_byte = WHITE_ON_BLACK; */
-/*     } */
-
-/*     // get the video memory offset for the given position */
-/*     int offset; */
-/*     if(col >= 0 && row >= 0) */
-/*     { */
-/*     	offset = get_screen_offset(col, row); */
-/*     } */
-/*     else */
-/*     { */
-/*     	offset = get_cursor(); */
-/*     } */
-
-/*     // if character is a newline, set offset to the end of current row */
-/*     if(c == '\n') */
-/*     { */
-/*     	int rows = offset / (2 * MAX_COLS); */
-/*     	offset = get_screen_offset(MAX_COLS - 1, rows); */
-/*     } */
-/*     else */
-/*     { */
-/*     	vidmem[offset] = c; */
-/*     	vidmem[offset+1] = attribute_byte; */
-/*     } */
-
-/*     // update the offset */
-/*     offset += 2; */
-
-/*     offset = handle_scrolling(offset); */
-
-/*     set_cursor(offset); */
-/* } */
-
-
-/* int get_screen_offset(int col, int row) */
-/* { */
-/*     return (row * MAX_COLS + col) * 2; */
-/* } */
-
-/* int handle_scrolling(int cursor_offset) */
-/* { */
-/*     if(cursor_offset < MAX_ROWS*MAX_COLS*2) */
-/*     { */
-/* 	return cursor_offset; */
-/*     } */
-
-/*     int i; */
-/*     for(i = 1; i < MAX_ROWS; i++) */
-/*     { */
-/* 	memory_copy((char *)(get_screen_offset(0, i) + VIDEO_ADDRESS), (char *)(get_screen_offset(0, i-1) + VIDEO_ADDRESS), MAX_COLS * 2); */
-/*     } */
-
-/*     char *last_line = (char *)(get_screen_offset(0, MAX_ROWS-1) + VIDEO_ADDRESS); */
-/*     for(i = 0; i < MAX_COLS*2; i++) */
-/*     { */
-/* 	last_line[i] = 0; */
-/*     } */
-
-/*     cursor_offset -= 2*MAX_COLS; */
-
-/*     return cursor_offset; */
-/* } */
-
-/* uint16_t get_cursor() */
-/* { */
-/*     // This device uses its control registers as an index */
-/*     // to select its internal registers, of which we are */
-/*     // interested in: */
-/*     // reg 14: which is the high byte of the cursor's offset */
-/*     // reg 15: which is the low byte of the cursor's offset */
-/*     // Once the internal register has been selected, we may read or */
-/*     // write a byte on the data register. */
-/*     outb(REG_SCREEN_CTRL, 14); */
-/*     uint16_t offset = inb(REG_SCREEN_DATA) << 8; */
-/*     outb(REG_SCREEN_CTRL, 15); */
-/*     offset += inb(REG_SCREEN_DATA); */
-    
-/*     return offset*2; */
-/* } */
+void set_cursor()
+{
+    uint16_t loc = g_cursor_y * MAX_COLS + g_cursor_x;
+    outb(REG_CTRL, 0x0F);	/* tell the VGA controller that we are going to set the cursor low byte */
+    outb(REG_DATA, (loc & 0xFF));
+    outb(REG_CTRL, 0x0E); 	/* tell the VGA controller that we are going to set the cursor high byte */
+    outb(REG_DATA, ((loc >> 8) & 0xFF));
+}
