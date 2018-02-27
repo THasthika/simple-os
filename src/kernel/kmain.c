@@ -1,6 +1,7 @@
 // main.c
 
-#include "common.h"
+#include "kernel/common.h"
+#include "kernel/descriptor_tables.h"
 
 #include "drivers/screen.h"
 
@@ -9,9 +10,9 @@ void kmain()
     screen_enable_cursor();
     screen_clear();
 
-    uint32_t x = 0x254B;
+    init_descriptor_tables();
 
-    screen_print_hex(x);
+    
     
     return;
 }

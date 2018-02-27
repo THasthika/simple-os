@@ -23,7 +23,6 @@ void screen_clear();
 void screen_put(char c);
 void screen_print(char *c);
 void screen_print_hex(uint32_t n);
-void screen_print_dec(uint32_t n);
 
 void screen_set_foreground(uint8_t color);
 void screen_set_background(uint8_t color);

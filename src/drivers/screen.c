@@ -14,8 +14,8 @@
 
 /* uint16_t get_cursor(); */
 
-void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
-void disable_cursor();
+static void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+static void disable_cursor();
 void set_cursor();
 void handle_scrolling();
 
@@ -113,11 +113,6 @@ void screen_print_hex(uint32_t n)
     screen_print(out);
 }
 
-void screen_print_dec(uint32_t n)
-{
-    
-}
-
 void screen_enable_cursor()
 {
     enable_cursor(14, 15);
@@ -165,7 +160,7 @@ void screen_set_background(uint8_t color)
     g_attribute = attr << 8;
 }
 
-void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
+static void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
 {
     outb(REG_CTRL, 0x0A);
     outb(REG_DATA, (inb(REG_DATA) & 0xC0) | cursor_start);
@@ -173,7 +168,7 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end)
     outb(REG_DATA, (inb(0x3E0) & 0xE0) | cursor_end);
 }
 
-void disable_cursor()
+static void disable_cursor()
 {
     outb(REG_CTRL, 0x0A);
     outb(REG_DATA, 0x20);
