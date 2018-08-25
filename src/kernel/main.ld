@@ -4,6 +4,7 @@ main.ld - linker script for the kernel
 
  */
 
+OUTPUT_FORMAT(binary)
 ENTRY(start)			/* starting label in the code */
 SECTIONS
 {

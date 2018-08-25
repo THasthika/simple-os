@@ -1,17 +1,15 @@
 #!/bin/bash
 
-if [[ $# -lt 3 ]]
+if [[ $# -lt 2 ]]
 then
-    echo "$0 [image file] [bootloader binary] [kernel binary]"
+    echo "$0 [disk file] [bootloader binary]"
     exit 1
 fi
 
 DISK=$1
 BOOT=$2
-KERN=$3
 
 BOOT_SIZE=$(stat -c%s "$BOOT")
-KERN_SIZE=$(stat -c%s "$KERN")
 
 # SIZE=512			# size in MB
 BYTESIZE=512			# byte size
@@ -30,6 +28,9 @@ then
     COUNT=$(( COUNT += 1 ))    
 fi
 
-dd if=/dev/zero of=${DISK} bs=${BYTESIZE} count=${COUNT}
-dd if=${BOOT} of=${DISK} bs=${BYTESIZE} conv=notrunc
-dd if=${KERN} of=${DISK} bs=${BYTESIZE} seek=${KERN_START} conv=notrunc
+dd if=${DISK} of=tmp bs=1 skip=440 count=72 > /dev/null
+dd if=${BOOT} of=${DISK} bs=${BYTESIZE} count=1 conv=notrunc > /dev/null
+dd if=tmp of=${DISK} bs=1 seek=440 count=72 conv=notrunc > /dev/null
+dd if=${BOOT} of=${DISK} bs=${BYTESIZE} ibs=512 obs=512 skip=1 seek=1 conv=notrunc > /dev/null
+
+rm tmp

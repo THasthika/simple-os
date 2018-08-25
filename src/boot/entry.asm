@@ -18,11 +18,11 @@
 ; 	jmp switch_to_pm
 
 	%include "print_string.asm"
-; 	%include "disk_load.asm"
-; 	%include "check_a20.asm"
-; 	%include "gdt.asm"
-; 	%include "print_string_pm.asm"
-; 	%include "switch_to_pm.asm"
+	%include "disk_load.asm"
+	%include "check_a20.asm"
+	%include "gdt.asm"
+	%include "print_string_pm.asm"
+	%include "switch_to_pm.asm"
 
 	[bits 16]
 load_kernel:
@@ -47,18 +47,18 @@ load_kernel:
 ; 	mov si, DISK_LOAD_ERROR
 ; 	call print_string
 
-; 	jmp $
+	; jmp $
 
-; 	.done:
-; 	ret
+	; .done:
+	; ret
 
-; 	[bits 32]
+	[bits 32]
 	
-; BEGIN_PM:
-; 	mov esi, PROT_MODE_MSG
-; 	call print_string_pm
+BEGIN_PM:
+	mov esi, PROT_MODE_MSG
+	call print_string_pm
 
-; 	jmp KERNEL_OFFSET
+	; jmp KERNEL_OFFSET
 	
 	jmp $
 	
@@ -67,6 +67,11 @@ LOAD_KERNEL_MSG:	db 'Loading the Kernel...', 0
 REAL_MODE_MSG:	db 'In Real Mode!', 0
 PROT_MODE_MSG:	db 'In Prot Mode!', 0
 DISK_LOAD_ERROR:	db 'Disk Load Error!', 0
+
+	times 440 - ($-$$) db 0
+
+	dw 0x12BB
+	;; 16 byte partiton structure x 4
 	
 	times 510 - ($-$$) db 0
 

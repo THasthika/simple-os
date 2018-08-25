@@ -1,8 +1,11 @@
-SRC := entry.asm
+SRC := entry.asm stage2.asm
 
 OBJ := $(patsubst %.asm, %.o, $(SRC))
 
 .PHONY: all clean
+
+all: ${OBJ}
+	cat $^ > $@
 
 all: ${BOOT_BIN}
 
@@ -12,5 +15,5 @@ clean:
 %.o: %.asm
 	nasm -f bin $< -o $@
 
-${BOOT_BIN}: ${OBJ}
-	cat $^ > $@
+# ${BOOT_BIN}: ${OBJ}
+# 	cat $^ > $@
