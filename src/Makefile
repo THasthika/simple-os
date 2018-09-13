@@ -16,4 +16,5 @@ kernel.bin: linker.ld $(FOBJ)
 	$(AS) $< -o $@ --32
 
 clean:
-	rm $(FOBJ)
+	rm -f $(FOBJ)
+	rm -f kernel.bin

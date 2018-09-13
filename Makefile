@@ -8,7 +8,7 @@ export LDFLAGS:=-melf_i386
 KERNEL_BIN:=src/kernel.bin
 OS_ISO:=os.iso
 
-.PHONEY: all clean iso run-qemu
+.PHONEY: all clean iso run-qemu $(KERNEL_BIN)
 
 all: $(KERNEL_BIN)
 
@@ -17,6 +17,7 @@ $(KERNEL_BIN):
 
 clean:
 	rm -rf isodir
+	rm -f $(OS_ISO)
 	$(MAKE) -C src clean
 
 iso: $(OS_ISO)

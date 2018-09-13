@@ -3,17 +3,18 @@
 .set CHECKSUM, 	-(MAGIC + FLAGS)
 
 .section .multiboot
-.long MAGIC
-.long FLAGS
-.long CHECKSUM
+.align	4
+.long 	MAGIC
+.long 	FLAGS
+.long 	CHECKSUM
 
 .section .text
 .extern kmain
 .global _start
 _start:
 	movl $kernel_stack, %esp
-	push %eax
-	push %ebx
+	push %ebx		/* Multiboot Information Structure */
+	push %eax		/* Magic Number */
 	call kmain
 	cli
 hang:

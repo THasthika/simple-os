@@ -1,3 +1,5 @@
+#include "./multiboot.h"
+
 void printf(char *str)
 {
     unsigned short *vmem = (unsigned short*) 0xb8000;
@@ -7,7 +9,11 @@ void printf(char *str)
 
 }
 
-void kmain(void *mboot_struct, unsigned int magic_number)
+void kmain(unsigned int magic_number, unsigned long addr)
 {
+    multiboot_info_t *mbi;
+
+    mbi = (multiboot_info_t*) addr;
+
     printf("Hello World");
 }
