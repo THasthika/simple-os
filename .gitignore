@@ -1,5 +1,6 @@
 *.img
 *.o
-*.asmo
 *.bin
 *.map
+*.iso
+isodir

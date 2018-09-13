@@ -1,46 +1,37 @@
-AS:=as
-CC:=gcc
-LD:=ld
+export AS:=as
+export CC:=gcc
+export LD:=ld
 
-CFLAGS:=-ffreestanding -O2 -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -fno-builtin
-LDFLAGS:=-melf_i386
+export CFLAGS:=-m32 -std=gnu99 -ffreestanding -O2 -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -fno-builtin
+export LDFLAGS:=-melf_i386
 
-OBJS:=\
-	boot.o\
-	kernel.o\
-
-
+KERNEL_BIN:=src/kernel.bin
+OS_ISO:=os.iso
 
 .PHONEY: all clean iso run-qemu
 
-all: os.bin
+all: $(KERNEL_BIN)
 
-os.bin: linker.ld $(OBJS)
-	$(LD) $(LDFLAGS) -T $< -o $@ $(OBJS)
-
-%.o: %.c
-	$(CC) -m32 -c $< -o $@ -std=gnu99 $(CFLAGS)
-
-%.o: %.s
-	$(AS) $< -o $@ --32
+$(KERNEL_BIN):
+	$(MAKE) -C src
 
 clean:
 	rm -rf isodir
-	rm -f os.bin os.iso $(OBJS)
+	$(MAKE) -C src clean
 
-iso: os.iso
+iso: $(OS_ISO)
 
 isodir isodir/boot isodir/boot/grub:
 	mkdir -p $@
 
-isodir/boot/os.bin: os.bin isodir/boot
+isodir/boot/os.bin: $(KERNEL_BIN) isodir/boot
 	cp $< $@
 
-isodir/boot/grub/grub.cfg: grub.cfg isodir/boot/grub
+isodir/boot/grub/grub.cfg: grub/grub.cfg isodir/boot/grub
 	cp $< $@
 
-os.iso: isodir/boot/os.bin isodir/boot/grub/grub.cfg
+$(OS_ISO): isodir/boot/os.bin isodir/boot/grub/grub.cfg
 	grub-mkrescue -o $@ isodir
 
-run-qemu: os.iso
-	qemu-system-i386 -cdrom os.iso
+run-qemu: $(OS_ISO)
+	qemu-system-i386 -cdrom $(OS_ISO)
