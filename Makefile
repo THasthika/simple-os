@@ -1,46 +1,46 @@
-ROOT_DIR = ${PWD}
-SRC_DIR = ${ROOT_DIR}/src
-BOOT_DIR = ${SRC_DIR}/boot
-KERNEL_DIR = ${SRC_DIR}/kernel
-BUILD_DIR = ${ROOT_DIR}/build
+AS:=as
+CC:=gcc
+LD:=ld
 
-BOOT_BIN=${BUILD_DIR}/boot.bin
-KERNEL_BIN=${BUILD_DIR}/kernel.bin
+CFLAGS:=-ffreestanding -O2 -Wall -Wextra -nostdlib -nostartfiles -nodefaultlibs -fno-builtin
+LDFLAGS:=-melf_i386
 
-HDD_IMG=${BUILD_DIR}/hdd.img
+OBJS:=\
+	boot.o\
+	kernel.o\
 
-QEMU_RUN=qemu-system-i386 -drive format=raw,file=${HDD_IMG},if=ide
 
-export
 
-# PARTITION INFORMATION
-PART_START=2048
-PART_END=524287
-PART_SECTOR=512
-LOOP_DEVICE=/dev/loop13
-MOUNT_DIR=${ROOT_DIR}/mount/
+.PHONEY: all clean iso run-qemu
 
-.PHONY: all clean run ${HDD_IMG}
+all: os.bin
 
-all: ${HDD_IMG}
+os.bin: linker.ld $(OBJS)
+	$(LD) $(LDFLAGS) -T $< -o $@ $(OBJS)
 
-${HDD_IMG}: boot
-	@./tools/mkdisk.sh ${HDD_IMG} ${BOOT_BIN} ${BOOT_BIN}
+%.o: %.c
+	$(CC) -m32 -c $< -o $@ -std=gnu99 $(CFLAGS)
 
-mount: ${HDD_IMG}
-	@./tools/mountdisk.sh ${HDD_IMG} ${MOUNT_DIR} ${LOOP_DEVICE} ${PART_START} ${PART_END} ${PART_SECTOR}
-
-unmount:
-	@./tools/unmountdisk.sh ${MOUNT_DIR} ${LOOP_DEVICE}
-
-run: ${HDD_IMG}
-	${QEMU_RUN}
-
-debug: ${HDD_IMG}
-	${QEMU_RUN} -gdb tcp::26000 -S
-
-boot: ${SRC_DIR}
-	@make -C ${SRC_DIR} boot
+%.o: %.s
+	$(AS) $< -o $@ --32
 
 clean:
-	@make -C ${SRC_DIR} clean
+	rm -rf isodir
+	rm -f os.bin os.iso $(OBJS)
+
+iso: os.iso
+
+isodir isodir/boot isodir/boot/grub:
+	mkdir -p $@
+
+isodir/boot/os.bin: os.bin isodir/boot
+	cp $< $@
+
+isodir/boot/grub/grub.cfg: grub.cfg isodir/boot/grub
+	cp $< $@
+
+os.iso: isodir/boot/os.bin isodir/boot/grub/grub.cfg
+	grub-mkrescue -o $@ isodir
+
+run-qemu: os.iso
+	qemu-system-i386 -cdrom os.iso
