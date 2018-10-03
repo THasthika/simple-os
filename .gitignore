@@ -3,6 +3,8 @@
 *.bin
 *.map
 *.iso
-isodir
 
 .vscode
+
+isodir
+sysroot
