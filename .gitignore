@@ -1,10 +1,1 @@
-*.img
-*.o
-*.bin
-*.map
-*.iso
-
-.vscode
-
-isodir
-sysroot
+build/
