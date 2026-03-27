@@ -1,5 +1,5 @@
 #!/bin/sh
 set -e
-. ./scripts/iso.sh
+. ./build.sh
 
-qemu-system-$(./scripts/target-triplet-to-arch.sh $HOST) -cdrom os.iso
+qemu-system-i386 -kernel sysroot/boot/kernel.bin
