@@ -7,8 +7,10 @@ A minimal x86 operating system kernel built from scratch for learning OS fundame
 - Multiboot-compliant bootloader (GRUB)
 - GDT (Global Descriptor Table) — flat model, kernel + user segments
 - IDT (Interrupt Descriptor Table) — 32 CPU exception handlers
+- PIC remapping — hardware IRQs on interrupts 32-47
+- Timer (PIT) and keyboard (PS/2) interrupt handling
 - VGA text-mode terminal driver (80x25, 16 colors)
-- Kernel libc (`libk.a`): printf (%c, %s), string ops, abort
+- Kernel libc (`libk.a`): printf (%c, %s, %d), string ops, abort
 - QEMU direct kernel boot + GDB remote debugging
 
 ## Prerequisites
@@ -44,7 +46,7 @@ docs/               # architecture and design notes
 
 - [x] GDT (Global Descriptor Table) setup
 - [x] IDT + interrupt/exception handling (ISRs)
-- [ ] PIC remapping + hardware interrupts (keyboard, timer)
+- [x] PIC remapping + hardware interrupts (keyboard, timer)
 - [ ] Physical memory manager (bitmap/buddy allocator)
 - [ ] Paging / virtual memory
 - [ ] Heap allocator (kmalloc/kfree)

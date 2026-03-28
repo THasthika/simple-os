@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <kernel/tty.h>
+#include <kernel/io.h>
+#include <kernel/pic.h>
 
 struct isr_frame {
     uint32_t gs, fs, es, ds;
@@ -10,12 +12,20 @@ struct isr_frame {
 } __attribute__((packed));
 
 void isr_handler(struct isr_frame *frame) {
-    (void)frame;
     // // printf("Exception: %d\n", frame->int_no);
     // printf("Exception: ");
     // // temp: print as single digit/char until printf supports %d
     // terminal_writestring("Exception triggered\n");
 
-    printf("Exception triggered\n");
+    if (frame->int_no >= 32 && frame->int_no <= 47) {
+        if (frame->int_no == 33) {
+            uint8_t scancode = inb(0x60);
+            printf("Key: %d\n", scancode);
+        }
+        pic_send_eoi(frame->int_no - 32);
+    } else {
+        printf("Exception: %d\n", frame->int_no);
+        // TODO: print exception number when printf supports %d
+    }
 
 }
