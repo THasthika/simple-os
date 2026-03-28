@@ -9,6 +9,7 @@ A minimal x86 operating system kernel built from scratch for learning OS fundame
 - IDT (Interrupt Descriptor Table) — 32 CPU exception handlers
 - PIC remapping — hardware IRQs on interrupts 32-47
 - Timer (PIT) and keyboard (PS/2) interrupt handling
+- Physical memory manager — bitmap allocator, Multiboot memory map parsing
 - VGA text-mode terminal driver (80x25, 16 colors)
 - Kernel libc (`libk.a`): printf (%c, %s, %d), string ops, abort
 - QEMU direct kernel boot + GDB remote debugging
@@ -47,7 +48,7 @@ docs/               # architecture and design notes
 - [x] GDT (Global Descriptor Table) setup
 - [x] IDT + interrupt/exception handling (ISRs)
 - [x] PIC remapping + hardware interrupts (keyboard, timer)
-- [ ] Physical memory manager (bitmap/buddy allocator)
+- [x] Physical memory manager (bitmap allocator)
 - [ ] Paging / virtual memory
 - [ ] Heap allocator (kmalloc/kfree)
 - [ ] PS/2 keyboard driver

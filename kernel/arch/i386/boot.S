@@ -30,7 +30,9 @@ _start:
 	call _init
 
 	# Transfer control to the main kernel.
+	pushl %ebx          # Multiboot info pointer (from GRUB)
 	call kmain
+	addl $4, %esp       # clean up (never reached)
 
 	# Hang if kernel_main unexpectedly returns.
 	cli
