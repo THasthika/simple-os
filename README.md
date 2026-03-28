@@ -37,7 +37,7 @@ scripts/            # cross-compiler config, ISO creation
 
 ## Next Steps
 
-- [ ] GDT (Global Descriptor Table) setup
+- [x] GDT (Global Descriptor Table) setup
 - [ ] IDT + interrupt/exception handling (ISRs)
 - [ ] PIC remapping + hardware interrupts (keyboard, timer)
 - [ ] Physical memory manager (bitmap/buddy allocator)
