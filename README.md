@@ -5,23 +5,26 @@ A minimal x86 operating system kernel built from scratch for learning OS fundame
 ## What's Implemented
 
 - Multiboot-compliant bootloader (GRUB)
+- GDT (Global Descriptor Table) — flat model, kernel + user segments
+- IDT (Interrupt Descriptor Table) — 32 CPU exception handlers
 - VGA text-mode terminal driver (80x25, 16 colors)
 - Kernel libc (`libk.a`): printf (%c, %s), string ops, abort
-- Bootable ISO generation
-- QEMU + GDB remote debugging
+- QEMU direct kernel boot + GDB remote debugging
 
 ## Prerequisites
 
 - `i686-elf` cross-compiler toolchain (gcc, ar, as)
-- GRUB 2 (`grub-mkrescue`)
 - QEMU (`qemu-system-i386`)
 - GDB (optional, for debugging)
+
+Run `./prereq.sh` to install dependencies (macOS + Linux).
 
 ## Build & Run
 
 ```bash
+./prereq.sh         # install toolchain + QEMU
 ./build.sh          # build libc + kernel
-./qemu.sh           # run in QEMU (builds ISO first)
+./qemu.sh           # run in QEMU
 ./clean.sh          # remove all artifacts
 ```
 
@@ -29,16 +32,18 @@ A minimal x86 operating system kernel built from scratch for learning OS fundame
 
 ```
 kernel/             # kernel source
-  arch/i386/        # x86 boot, TTY driver, VGA, linker script
+  arch/i386/        # x86 boot, GDT, IDT, ISRs, TTY, VGA
   kernel/kmain.c    # kernel entry point
+  include/kernel/   # kernel headers
 libc/               # freestanding C library (libk.a)
-scripts/            # cross-compiler config, ISO creation
+scripts/            # cross-compiler config
+docs/               # architecture and design notes
 ```
 
 ## Next Steps
 
 - [x] GDT (Global Descriptor Table) setup
-- [ ] IDT + interrupt/exception handling (ISRs)
+- [x] IDT + interrupt/exception handling (ISRs)
 - [ ] PIC remapping + hardware interrupts (keyboard, timer)
 - [ ] Physical memory manager (bitmap/buddy allocator)
 - [ ] Paging / virtual memory
